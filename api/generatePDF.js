@@ -14,11 +14,26 @@ export default async function handler(req, res) {
     format: 'a4',
   });
 
-  doc.setFontSize(18);
-  doc.text('Caj Transaksi Penggunaan Modul Sebutharga & Tender', 210, 40, { align: 'center' });
+  doc.setFontSize(16);
+  doc.text('Caj Transaksi Penggunaan Modul Sebutharga & Tender', 300, 40, { align: 'center' });
 
   const headers = [
-    ['Agensi', 'Tahun', 'Tajuk', 'No Rujukan', 'Kategori', 'Jabatan/Unit', 'Status Terkini', 'Nilai Kontrak', 'Tarikh Mula', 'Tarikh Akhir', 'Jumlah Bulan', 'One-Off', 'Bermasa', 'Fi CDCi']
+    [
+      'Agensi',
+      'Tahun',
+      'Tajuk',
+      'No Rujukan',
+      'Kategori',
+      'Jabatan/Unit',
+      'Status',
+      'Nilai Kontrak (RM)',
+      'Tarikh Mula',
+      'Tarikh Akhir',
+      'Bulan Kontrak',
+      'One-Off',
+      'Bermasa',
+      'Fi CDCi (RM)'
+    ]
   ];
 
   const data = [
@@ -41,14 +56,34 @@ export default async function handler(req, res) {
   ];
 
   autoTable(doc, {
-    startY: 70,
+    startY: 60,
     head: headers,
     body: data,
-    theme: 'grid'
+    styles: {
+      fontSize: 10,
+      cellPadding: 4,
+      overflow: 'linebreak'
+    },
+    columnStyles: {
+      2: { cellWidth: 180 }, // Tajuk
+      3: { cellWidth: 90 },  // No Rujukan
+      6: { cellWidth: 60 },  // Status
+      7: { cellWidth: 80 },  // Nilai Kontrak
+    },
+    theme: 'grid',
+    headStyles: {
+      fillColor: [255, 204, 0],
+      textColor: 20,
+      halign: 'center',
+      fontStyle: 'bold'
+    },
+    bodyStyles: {
+      halign: 'left',
+      valign: 'top'
+    }
   });
 
   const pdfOutput = doc.output('arraybuffer');
-
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', `attachment; filename=${invoiceNumber}.pdf`);
   res.status(200).send(Buffer.from(pdfOutput));
