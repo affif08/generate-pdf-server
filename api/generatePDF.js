@@ -1,6 +1,16 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+function formatDate(input) {
+  if (!input) return '-';
+  const date = new Date(input);
+  if (isNaN(date.getTime())) return input; // if invalid, return raw
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
 export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
@@ -22,17 +32,17 @@ export default function handler(req, res) {
       'Agensi',
       'Tahun',
       'Tajuk',
-      'No. Rujukan (No. Sebutharga / Tender)',
+      'No. Rujukan',
       'Kategori',
       'Jabatan/Unit',
-      'Status Terkini (Selesai/Batal/Re-tender)',
+      'Status Terkini',
       'Nilai Kontrak (Tanpa SST) (RM)',
       'Tarikh Mula',
       'Tarikh Akhir',
-      'Jumlah Bulan Kontrak',
+      'Jumlah Bulan',
       'One-Off',
       'Bermasa',
-      'Fi CDCi (0.7%) (RM)'
+      'Fi CDCi (RM)'
     ]
   ];
 
@@ -45,8 +55,8 @@ export default function handler(req, res) {
     row.JabatanUnit || '-',
     row.StatusTerkini || '-',
     row.NilaiKontrak || '-',
-    row.TarikhMula || '-',
-    row.TarikhAkhir || '-',
+    formatDate(row.TarikhMula),
+    formatDate(row.TarikhAkhir),
     row.JumlahBulanKontrak || '-',
     row.OneOff || '-',
     row.Bermasa || '-',
@@ -61,25 +71,25 @@ export default function handler(req, res) {
     styles: {
       fontSize: 10,
       cellPadding: 3,
+      overflow: 'linebreak',
       valign: 'middle',
       halign: 'left',
-      overflow: 'linebreak'
+      minCellHeight: 20
     },
     headStyles: {
-      fillColor: [255, 255, 153], // Light Yellow header background
+      fillColor: [255, 255, 153], // Light Yellow
       textColor: 0,
       fontStyle: 'bold',
       halign: 'center'
     },
-    alternateRowStyles: {
-      fillColor: [255, 255, 255] // White background for all rows
-    },
     columnStyles: {
-      2: { cellWidth: 200 }, // Tajuk wider
-      3: { cellWidth: 120 }, // No Rujukan
-      6: { cellWidth: 100 }, // Status
+      2: { cellWidth: 200 }, // Tajuk
+      3: { cellWidth: 100 }, // No Rujukan
+      6: { cellWidth: 80 },  // Status Terkini
       7: { cellWidth: 100 }, // Nilai Kontrak
-      13: { cellWidth: 90 } // Fi CDCi
+      8: { cellWidth: 80 },  // Tarikh Mula
+      9: { cellWidth: 80 },  // Tarikh Akhir
+      13: { cellWidth: 90 }  // Fi CDCi
     }
   });
 
