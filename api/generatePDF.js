@@ -6,65 +6,81 @@ export default function handler(req, res) {
     return res.status(405).send('Method Not Allowed');
   }
 
-  const { invoiceNumber, fields } = req.body;
+  const { invoiceNumber, rows } = req.body;
 
   const doc = new jsPDF({
     orientation: 'landscape',
     unit: 'pt',
-    format: 'a4',
+    format: 'a4'
   });
 
   doc.setFontSize(16);
-  doc.text('Caj Transaksi Penggunaan Modul Sebutharga & Tender', 300, 40, { align: 'center' });
+  doc.text('Caj Transaksi Penggunaan Modul Sebutharga & Tender', 420, 40, { align: 'center' });
 
-  const headers = [[
-    'Agensi', 'Tahun', 'Tajuk', 'No Rujukan', 'Kategori', 'Jabatan/Unit',
-    'Status', 'Nilai (RM)', 'Mula', 'Akhir', 'Bulan', 'One-Off', 'Bermasa', 'Fi CDCi'
-  ]];
+  const headers = [
+    [
+      'Agensi',
+      'Tahun',
+      'Tajuk',
+      'No. Rujukan (No. Sebutharga / Tender)',
+      'Kategori',
+      'Jabatan/Unit',
+      'Status Terkini (Selesai/Batal/Re-tender)',
+      'Nilai Kontrak (Tanpa SST) (RM)',
+      'Tarikh Mula',
+      'Tarikh Akhir',
+      'Jumlah Bulan Kontrak',
+      'One-Off',
+      'Bermasa',
+      'Fi CDCi (0.7%) (RM)'
+    ]
+  ];
 
-  const data = [[
-    fields.Agensi || '-',
-    fields.Tahun || '-',
-    fields.Tajuk || '-',
-    fields.NoRujukan || '-',
-    fields.Kategori || '-',
-    fields.JabatanUnit || '-',
-    fields.StatusTerkini || '-',
-    fields.NilaiKontrak || '-',
-    fields.TarikhMula || '-',
-    fields.TarikhAkhir || '-',
-    fields.JumlahBulanKontrak || '-',
-    fields.OneOff || '-',
-    fields.Bermasa || '-',
-    fields.FiCDCi || '-'
-  ]];
+  const tableData = rows.map(row => [
+    row.Agensi || '-',
+    row.Tahun || '-',
+    row.Tajuk || '-',
+    row.NoRujukan || '-',
+    row.Kategori || '-',
+    row.JabatanUnit || '-',
+    row.StatusTerkini || '-',
+    row.NilaiKontrak || '-',
+    row.TarikhMula || '-',
+    row.TarikhAkhir || '-',
+    row.JumlahBulanKontrak || '-',
+    row.OneOff || '-',
+    row.Bermasa || '-',
+    row.FiCDCi || '-'
+  ]);
 
   autoTable(doc, {
     startY: 70,
     head: headers,
-    body: data,
+    body: tableData,
+    theme: 'grid',
     styles: {
       fontSize: 10,
-      cellPadding: 4,
-      valign: 'middle'
-    },
-    columnStyles: {
-      2: { cellWidth: 220 }, // Tajuk
-      3: { cellWidth: 90 },  // No Rujukan
-      6: { cellWidth: 70 },  // Status
-      7: { cellWidth: 80 },  // Nilai
-      13: { cellWidth: 60 }, // Fi CDCi
+      cellPadding: 3,
+      valign: 'middle',
+      halign: 'left',
+      overflow: 'linebreak'
     },
     headStyles: {
-      fillColor: [220, 220, 220],
-      textColor: 20,
+      fillColor: [255, 255, 153], // Light Yellow header background
+      textColor: 0,
       fontStyle: 'bold',
       halign: 'center'
     },
-    bodyStyles: {
-      halign: 'left'
+    alternateRowStyles: {
+      fillColor: [255, 255, 255] // White background for all rows
     },
-    theme: 'grid'
+    columnStyles: {
+      2: { cellWidth: 200 }, // Tajuk wider
+      3: { cellWidth: 120 }, // No Rujukan
+      6: { cellWidth: 100 }, // Status
+      7: { cellWidth: 100 }, // Nilai Kontrak
+      13: { cellWidth: 90 } // Fi CDCi
+    }
   });
 
   const pdfOutput = doc.output('arraybuffer');
