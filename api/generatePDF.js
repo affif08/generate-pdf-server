@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-export default async function handler(req, res) {
+export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
   }
@@ -14,8 +14,7 @@ export default async function handler(req, res) {
     format: 'a4'
   });
 
-  doc.setFontSize(12); // Moderate font size to match normal Google Sheet look
-
+  doc.setFontSize(12);
   doc.text('Caj Transaksi Penggunaan Modul Sebutharga & Tender', 420, 40, { align: 'center' });
 
   const headers = [
@@ -30,7 +29,7 @@ export default async function handler(req, res) {
       'Nilai Kontrak (RM)',
       'Tarikh Mula',
       'Tarikh Akhir',
-      'Jumlah Bulan Kontrak',
+      'Jumlah Bulan',
       'One-Off',
       'Bermasa',
       'Fi CDCi (RM)'
@@ -38,20 +37,20 @@ export default async function handler(req, res) {
   ];
 
   const tableData = rows.map(row => [
-    row.Agensi || '-',
-    row.Tahun || '-',
-    row.Tajuk || '-',
-    row.NoRujukan || '-',
-    row.Kategori || '-',
-    row.JabatanUnit || '-',
-    row.StatusTerkini || '-',
-    row.NilaiKontrak || '-',
-    row.TarikhMula || '-',
-    row.TarikhAkhir || '-',
-    row.JumlahBulanKontrak || '-',
-    row.OneOff || '-',
-    row.Bermasa || '-',
-    row.FiCDCi || '-'
+    row.Agensi,
+    row.Tahun,
+    row.Tajuk,
+    row.NoRujukan,
+    row.Kategori,
+    row.JabatanUnit,
+    row.StatusTerkini,
+    row.NilaiKontrak,
+    row.TarikhMula,
+    row.TarikhAkhir,
+    row.JumlahBulanKontrak,
+    row.OneOff,
+    row.Bermasa,
+    row.FiCDCi
   ]);
 
   autoTable(doc, {
@@ -61,25 +60,24 @@ export default async function handler(req, res) {
     theme: 'grid',
     styles: {
       fontSize: 10,
-      cellPadding: 3,
+      cellPadding: 4,
       overflow: 'linebreak',
+      halign: 'left',
       valign: 'middle',
-      halign: 'left'
+      minCellHeight: 20
     },
     headStyles: {
-      fillColor: [255, 255, 153], // Excel light yellow header color
+      fillColor: [255, 255, 153],
       textColor: 0,
       fontStyle: 'bold',
       halign: 'center'
     },
-    alternateRowStyles: {
-      fillColor: [255, 255, 255] // keep normal white rows
-    },
     columnStyles: {
-      2: { cellWidth: 200 }, // Tajuk wider
-      3: { cellWidth: 100 }, // No. Rujukan
-      6: { cellWidth: 80 },  // Status Terkini
+      2: { cellWidth: 180 }, // Tajuk
+      3: { cellWidth: 100 }, // No Rujukan
       7: { cellWidth: 100 }, // Nilai Kontrak
+      8: { cellWidth: 80 },  // Tarikh Mula
+      9: { cellWidth: 80 },  // Tarikh Akhir
       13: { cellWidth: 90 }  // Fi CDCi
     }
   });
