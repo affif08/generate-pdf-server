@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-export default async function handler(req, res) {
+export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
   }
@@ -17,70 +17,54 @@ export default async function handler(req, res) {
   doc.setFontSize(16);
   doc.text('Caj Transaksi Penggunaan Modul Sebutharga & Tender', 300, 40, { align: 'center' });
 
-  const headers = [
-    [
-      'Agensi',
-      'Tahun',
-      'Tajuk',
-      'No Rujukan',
-      'Kategori',
-      'Jabatan/Unit',
-      'Status',
-      'Nilai Kontrak (RM)',
-      'Tarikh Mula',
-      'Tarikh Akhir',
-      'Bulan Kontrak',
-      'One-Off',
-      'Bermasa',
-      'Fi CDCi (RM)'
-    ]
-  ];
+  const headers = [[
+    'Agensi', 'Tahun', 'Tajuk', 'No Rujukan', 'Kategori', 'Jabatan/Unit',
+    'Status', 'Nilai (RM)', 'Mula', 'Akhir', 'Bulan', 'One-Off', 'Bermasa', 'Fi CDCi'
+  ]];
 
-  const data = [
-    [
-      fields.Agensi || '',
-      fields.Tahun || '',
-      fields.Tajuk || '',
-      fields.NoRujukan || '',
-      fields.Kategori || '',
-      fields.JabatanUnit || '',
-      fields.StatusTerkini || '',
-      fields.NilaiKontrak || '',
-      fields.TarikhMula || '',
-      fields.TarikhAkhir || '',
-      fields.JumlahBulanKontrak || '',
-      fields.OneOff || '',
-      fields.Bermasa || '',
-      fields.FiCDCi || ''
-    ]
-  ];
+  const data = [[
+    fields.Agensi || '-',
+    fields.Tahun || '-',
+    fields.Tajuk || '-',
+    fields.NoRujukan || '-',
+    fields.Kategori || '-',
+    fields.JabatanUnit || '-',
+    fields.StatusTerkini || '-',
+    fields.NilaiKontrak || '-',
+    fields.TarikhMula || '-',
+    fields.TarikhAkhir || '-',
+    fields.JumlahBulanKontrak || '-',
+    fields.OneOff || '-',
+    fields.Bermasa || '-',
+    fields.FiCDCi || '-'
+  ]];
 
   autoTable(doc, {
-    startY: 60,
+    startY: 70,
     head: headers,
     body: data,
     styles: {
       fontSize: 10,
       cellPadding: 4,
-      overflow: 'linebreak'
+      valign: 'middle'
     },
     columnStyles: {
-      2: { cellWidth: 180 }, // Tajuk
+      2: { cellWidth: 220 }, // Tajuk
       3: { cellWidth: 90 },  // No Rujukan
-      6: { cellWidth: 60 },  // Status
-      7: { cellWidth: 80 },  // Nilai Kontrak
+      6: { cellWidth: 70 },  // Status
+      7: { cellWidth: 80 },  // Nilai
+      13: { cellWidth: 60 }, // Fi CDCi
     },
-    theme: 'grid',
     headStyles: {
-      fillColor: [255, 204, 0],
+      fillColor: [220, 220, 220],
       textColor: 20,
-      halign: 'center',
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      halign: 'center'
     },
     bodyStyles: {
-      halign: 'left',
-      valign: 'top'
-    }
+      halign: 'left'
+    },
+    theme: 'grid'
   });
 
   const pdfOutput = doc.output('arraybuffer');
