@@ -1,0 +1,13 @@
+{
+  "name": "generate-pdf-server",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.25",
+    "next": "12.0.7"
+  }
+}
